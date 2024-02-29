@@ -26,32 +26,13 @@ include = [
     "README.md",
 ]
 
-
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[[bin]]
-name = "jkcutils-rs"
-path = "src/cli.rs"
-
-[[example]]
-name = "jkcutils-rs-main"
-path = "src/main.rs"
 
 [profile.dev]
 opt-level = 1
 overflow-checks = false
 
 [dependencies]
-
-
-
-
-
-
-
-
-
 
 [dev-dependencies]
 
