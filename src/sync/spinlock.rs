@@ -441,7 +441,7 @@ impl<T: ?Sized> SpinLock<T> {
     /// use jkcutils_rs::sync::SpinLock;
     /// 
     /// let mut spinlock = SpinLock::new(0);
-    /// *spinlock.get_mut().unwrap() = 10
+    /// *spinlock.get_mut().unwrap() = 10;
     /// assert_eq!(*spinlock.lock().unwrap(), 10);
     /// ```
     pub fn get_mut(&mut self) -> LockResult<&mut T> {
@@ -496,7 +496,6 @@ impl<'a, T: ?Sized> SpinLockGuard<'a, T> {
 }
 
 
-
 impl<T: ?Sized> Deref for SpinLockGuard<'_, T> {
     type Target = T;
 
@@ -538,6 +537,8 @@ impl<T: ?Sized + fmt::Display> fmt::Display for SpinLockGuard<'_, T> {
 
 #[cfg(test)]
 mod tests {
+    use std::thread;
+    use std::sync::Arc;
     use super::*;
 
     #[test]
@@ -547,14 +548,36 @@ mod tests {
         std::thread::scope(|s| {
             s.spawn(|| spin_lock.lock().unwrap().push(1));
             s.spawn(|| {
-                let mut spin_load_guard = spin_lock.lock().unwrap();
-                spin_load_guard.push(2);
+                let mut spin_lock_guard = spin_lock.lock().unwrap();
+                spin_lock_guard.push(2);
                 std::thread::sleep(std::time::Duration::from_secs(1));
-                spin_load_guard.push(3);
+                spin_lock_guard.push(3);
             });
         });
 
-        let spin_load_guard = spin_lock.lock().unwrap();
-        assert!(spin_load_guard.as_slice() == [1, 2, 3] || spin_load_guard.as_slice() == [2, 3, 1]);
+        let spin_lock_guard = spin_lock.lock().unwrap();
+        assert!(spin_lock_guard.as_slice() == [1, 2, 3] || spin_lock_guard.as_slice() == [2, 3, 1]);
+    }
+
+    #[test]
+    fn test_spinlock_poison() {
+        let spinlock = Arc::new(SpinLock::new(0));
+        let c_spinlock = spinlock.clone();
+
+        let _ = thread::spawn(move || {
+            let _lock = c_spinlock.lock().unwrap();
+            panic!();
+        }).join();
+
+        assert_eq!(spinlock.is_poisoned(), true);
+        assert_eq!(spinlock.lock().is_err(), true);
+
+        let x = spinlock.lock().unwrap_or_else(|mut e| {
+            **e.get_mut() = 1;
+            spinlock.clear_poison();
+            e.into_inner()
+        });
+        assert_eq!(spinlock.is_poisoned(), false);
+        assert_eq!(*x, 1);
     }
 }
