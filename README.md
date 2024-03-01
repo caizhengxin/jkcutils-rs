@@ -6,8 +6,11 @@
 
 ## Features
 
-- [x] xxxx
-- [ ] xxxx
+- [x] [sync](./src/sync/)
+  + [x] [seqlock](./src/sync/seqlock.rs)
+  + [x] [spinlock](./src/sync/spinlock.rs)
+- [x] [time](./src/time/)
+  + [x] [sleep](./src/time/sleep.rs) 
 
 ## Usage
 
