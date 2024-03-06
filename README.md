@@ -2,7 +2,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/jkcutils-rs)](https://crates.io/crates/jkcutils-rs)
 [![Crates.io](https://img.shields.io/crates/d/jkcutils-rs)](https://crates.io/crates/jkcutils-rs)
-[![License](https://img.shields.io/crates/l/jkcutils-rs)](LICENSE)
+[![License](https://img.shields.io/crates/l/jkcutils-rs)](LICENSE-MIT)
 
 ## Features
 
